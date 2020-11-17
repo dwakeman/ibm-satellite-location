@@ -1,8 +1,8 @@
 
-/*
- *  Create a new VPC for use with an IBM Satellite location
- *
- */
+#
+# Create a new VPC for use with an IBM Satellite location
+#
+#
 resource "aws_vpc" "ibm_satellite_vpc" {
   cidr_block       = "10.10.0.0/16"
 
@@ -11,10 +11,10 @@ resource "aws_vpc" "ibm_satellite_vpc" {
   }
 }
 
-/*
- *  Create a new internet gateway for the VPC
- *
- */
+#
+# Create a new internet gateway for the VPC
+#
+#
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.ibm_satellite_vpc.id
 
@@ -23,10 +23,10 @@ resource "aws_internet_gateway" "internet_gateway" {
   }
 }
 
-/*
- *  Create a new route table for the VPC
- *
- */
+#
+# Create a new route table for the VPC
+#
+#
 resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.ibm_satellite_vpc.id
 
@@ -40,10 +40,10 @@ resource "aws_route_table" "route_table" {
   }
 }
 
-/*
- *  Create a new security group for IBM Cloud Satellite
- *
- */
+#
+# Create a new security group for IBM Cloud Satellite
+#
+#
 resource "aws_security_group" "satellite_sg" {
   name        = "ibm-cloud-satellite"
   description = "Security group for IBM Cloud Satellite hosts"
@@ -103,13 +103,10 @@ resource "aws_security_group" "satellite_sg" {
 }
 
 
-
-
-
-/*
- *  Create a new subnet in availability zone 1
- *
- */
+#
+# Create a new subnet in availability zone 1
+#
+#
 resource "aws_subnet" "public_subnet_zone_1" {
   vpc_id            = aws_vpc.ibm_satellite_vpc.id
   cidr_block        = "10.10.1.0/24"
@@ -121,20 +118,20 @@ resource "aws_subnet" "public_subnet_zone_1" {
 }
 
 
-/*
- *  Add subnet to new route table
- *
- */
+#
+# Add subnet to new route table
+#
+#
 resource "aws_route_table_association" "rta_subnet_1" {
   subnet_id      = aws_subnet.public_subnet_zone_1.id
   route_table_id = aws_route_table.route_table.id
 }
 
 
-/*
- *  Create a new subnet in availability zone 2
- *
- */
+#
+# Create a new subnet in availability zone 2
+#
+#
 resource "aws_subnet" "public_subnet_zone_2" {
   vpc_id            = aws_vpc.ibm_satellite_vpc.id
   cidr_block        = "10.10.2.0/24"
@@ -145,21 +142,20 @@ resource "aws_subnet" "public_subnet_zone_2" {
   }
 }
 
-/*
- *  Add subnet to new route table
- *
- */
+#
+# Add subnet to new route table
+#
+#
 resource "aws_route_table_association" "rta_subnet_2" {
   subnet_id      = aws_subnet.public_subnet_zone_2.id
   route_table_id = aws_route_table.route_table.id
 }
 
 
-
-/*
- *  Create a new subnet in availability zone 3
- *
- */
+#
+# Create a new subnet in availability zone 3
+#
+#
 resource "aws_subnet" "public_subnet_zone_3" {
   vpc_id            = aws_vpc.ibm_satellite_vpc.id
   cidr_block        = "10.10.3.0/24"
@@ -170,13 +166,163 @@ resource "aws_subnet" "public_subnet_zone_3" {
   }
 }
 
-/*
- *  Add subnet to new route table
- *
- */
+#
+# Add subnet to new route table
+#
+#
 resource "aws_route_table_association" "rta_subnet_3" {
   subnet_id      = aws_subnet.public_subnet_zone_3.id
   route_table_id = aws_route_table.route_table.id
 }
 
+
+#
+# Create EC2 instance for IBM Cloud Satellite Control Plane
+# in Availability Zone 1
+#
+resource "aws_instance" "sat_control_plane_1" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_1
+  subnet_id = aws_subnet.public_subnet_zone_1.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-cp-1"
+  }
+}
+
+
+/*
+#
+# Create EC2 instance for IBM Cloud Satellite Control Plane
+# in Availability Zone 2
+#
+resource "aws_instance" "sat_control_plane_2" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_2
+  subnet_id = aws_subnet.public_subnet_zone_2.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-cp-2"
+  }
+}
+
+#
+# Create EC2 instance for IBM Cloud Satellite Control Plane
+# in Availability Zone 3
+#
+resource "aws_instance" "sat_control_plane_3" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_3
+  subnet_id = aws_subnet.public_subnet_zone_3.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-cp-3"
+  }
+}
+*/
+
+
+#
+# Create EC2 instance for IBM Cloud Satellite Worker Node
+# in Availability Zone 1
+#
+resource "aws_instance" "sat_worker_1" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_1
+  subnet_id = aws_subnet.public_subnet_zone_1.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-wrk-1"
+  }
+}
+
+/*
+#
+# Create EC2 instance for IBM Cloud Satellite Worker Node
+# in Availability Zone 2
+#
+resource "aws_instance" "sat_worker_2" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_2
+  subnet_id = aws_subnet.public_subnet_zone_2.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-wrk-2"
+  }
+}
+
+#
+# Create EC2 instance for IBM Cloud Satellite Worker Node
+# in Availability Zone 3
+#
+resource "aws_instance" "sat_worker_3" {
+  ami           = "ami-0170fc126935d44c3"
+  instance_type = "m4.xlarge"
+  availability_zone = var.availability_zone_3
+  subnet_id = aws_subnet.public_subnet_zone_3.id
+  associate_public_ip_address = true
+  key_name = var.key_name
+  vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
+  user_data_base64 = var.ec2_user_data_base64
+
+  root_block_device {
+      volume_size = 100
+  }
+
+
+  tags = {
+    Name = "sat-${var.satellite_location_name}-wrk-3"
+  }
+}
+*/
 
