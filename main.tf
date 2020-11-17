@@ -1,3 +1,7 @@
+data "local_file" "user_data" {
+    filename = "${path.module}/userdata.sh"
+}
+
 
 #
 # Create a new VPC for use with an IBM Satellite location
@@ -181,14 +185,14 @@ resource "aws_route_table_association" "rta_subnet_3" {
 # in Availability Zone 1
 #
 resource "aws_instance" "sat_control_plane_1" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.control_plane_ami
+  instance_type = var.control_plane_instance_type
   availability_zone = var.availability_zone_1
   subnet_id = aws_subnet.public_subnet_zone_1.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -201,20 +205,20 @@ resource "aws_instance" "sat_control_plane_1" {
 }
 
 
-/*
+
 #
 # Create EC2 instance for IBM Cloud Satellite Control Plane
 # in Availability Zone 2
 #
 resource "aws_instance" "sat_control_plane_2" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.control_plane_ami
+  instance_type = var.control_plane_instance_type
   availability_zone = var.availability_zone_2
   subnet_id = aws_subnet.public_subnet_zone_2.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -231,14 +235,14 @@ resource "aws_instance" "sat_control_plane_2" {
 # in Availability Zone 3
 #
 resource "aws_instance" "sat_control_plane_3" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.control_plane_ami
+  instance_type = var.control_plane_instance_type
   availability_zone = var.availability_zone_3
   subnet_id = aws_subnet.public_subnet_zone_3.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -249,22 +253,22 @@ resource "aws_instance" "sat_control_plane_3" {
     Name = "sat-${var.satellite_location_name}-cp-3"
   }
 }
-*/
 
 
+/*
 #
 # Create EC2 instance for IBM Cloud Satellite Worker Node
 # in Availability Zone 1
 #
 resource "aws_instance" "sat_worker_1" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.worker_ami
+  instance_type = var.worker_instance_type
   availability_zone = var.availability_zone_1
   subnet_id = aws_subnet.public_subnet_zone_1.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -276,20 +280,20 @@ resource "aws_instance" "sat_worker_1" {
   }
 }
 
-/*
+
 #
 # Create EC2 instance for IBM Cloud Satellite Worker Node
 # in Availability Zone 2
 #
 resource "aws_instance" "sat_worker_2" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.worker_ami
+  instance_type = var.worker_instance_type
   availability_zone = var.availability_zone_2
   subnet_id = aws_subnet.public_subnet_zone_2.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -306,14 +310,14 @@ resource "aws_instance" "sat_worker_2" {
 # in Availability Zone 3
 #
 resource "aws_instance" "sat_worker_3" {
-  ami           = "ami-0170fc126935d44c3"
-  instance_type = "m4.xlarge"
+  ami           = var.worker_ami
+  instance_type = var.worker_instance_type
   availability_zone = var.availability_zone_3
   subnet_id = aws_subnet.public_subnet_zone_3.id
   associate_public_ip_address = true
   key_name = var.key_name
   vpc_security_group_ids = ["${aws_security_group.satellite_sg.id}"]
-  user_data_base64 = var.ec2_user_data_base64
+  user_data = data.local_file.user_data.content
 
   root_block_device {
       volume_size = 100
@@ -324,5 +328,5 @@ resource "aws_instance" "sat_worker_3" {
     Name = "sat-${var.satellite_location_name}-wrk-3"
   }
 }
-*/
 
+*/

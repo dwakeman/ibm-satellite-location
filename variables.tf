@@ -1,6 +1,6 @@
 
 variable "satellite_location_name" {
-    default = "ibm-satellite-us-north-central"
+    default = "us-north-central"
 }
 
 variable "availability_zone_1" {
@@ -19,6 +19,23 @@ variable "key_name" {
     default = "Samaritan"
 }
 
-variable "ec2_user_data_base64" {
-    default = ""
+variable "control_plane_ami" {
+#    default = "ami-005b7876121b7244d"
+    default = "ami-0d2bf41df19c4aac7"
+}
+
+#The one in the default field is what Jake used.  When I searched in AWS using the name he provided I found this one:
+# AMI Name: RHEL-7.9_HVM_GA-20200917-x86_64-0-Hourly2-GP2
+# AMI ID: ami-0d2bf41df19c4aac7
+variable "worker_ami" {
+#    default = "ami-005b7876121b7244d"
+    default = "ami-0d2bf41df19c4aac7"
+}
+
+variable "control_plane_instance_type" {
+    default = "t3.xlarge"
+}
+
+variable "worker_instance_type" {
+    default = "t3.xlarge"
 }
