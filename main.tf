@@ -54,6 +54,13 @@ resource "aws_security_group" "satellite_sg" {
   vpc_id      = aws_vpc.ibm_satellite_vpc.id
 
   ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  ingress {
     description = "TLS from anywhere"
     from_port   = 443
     to_port     = 443
@@ -255,7 +262,7 @@ resource "aws_instance" "sat_control_plane_3" {
 }
 
 
-/*
+
 #
 # Create EC2 instance for IBM Cloud Satellite Worker Node
 # in Availability Zone 1
@@ -329,4 +336,4 @@ resource "aws_instance" "sat_worker_3" {
   }
 }
 
-*/
+

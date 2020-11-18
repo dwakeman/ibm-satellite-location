@@ -1,6 +1,6 @@
 
 variable "satellite_location_name" {
-    default = "us-north-central"
+    default = "des-moines"
 }
 
 variable "availability_zone_1" {
